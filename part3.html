@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C1 Speaking: Part 3 - Collaborative Task</title>
+    <style>
+        :root {
+            --cambridge-blue: #0072bc;
+            --bg: #f4f7f9;
+            --success: #16a34a;
+            --amber: #b45309;
+            --danger: #dc2626;
+            --line-color: #cbd5e1;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 100%; max-width: 900px; text-align: center; border: 1px solid #ddd; }
+        
+        h2 { color: var(--cambridge-blue); margin-top: 0; text-transform: uppercase; letter-spacing: 1px; }
+        .instructions { background: #f8fafc; padding: 15px; border-radius: 8px; text-align: left; font-size: 14px; line-height: 1.5; color: #334155; border-left: 4px solid var(--cambridge-blue); margin-bottom: 20px; }
+
+        .mindmap-outer { position: relative; padding: 20px; margin: 20px 0; background: #fff; }
+        .spider-lines { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+
+        .mindmap-container {
+            position: relative;
+            display: grid;
+            grid-template-columns: 1fr 1.2fr 1fr;
+            grid-template-rows: auto auto auto;
+            gap: 30px;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .node, .central-node {
+            background: white; border: 2px solid #334155; padding: 15px; font-size: 14px; font-weight: 600; color: #334155; box-shadow: 3px 3px 0px #334155; display: flex; align-items: center; justify-content: center; min-height: 60px;
+        }
+
+        .central-node { grid-column: 2; grid-row: 2; background: #fffbeb; border-width: 3px; font-size: 16px; color: #92400e; padding: 20px; }
+
+        .timer-box { font-size: 42px; font-weight: 800; color: var(--cambridge-blue); margin: 5px 0; font-variant-numeric: tabular-nums; }
+        .phase-label { font-weight: bold; color: #64748b; text-transform: uppercase; letter-spacing: 2px; font-size: 14px; }
+        .timer-finished { color: var(--danger) !important; }
+
+        .mic-icon { width: 70px; height: 70px; background: #eee; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; font-size: 30px; margin: 10px auto; color: #666; transition: 0.3s; }
+        .listening { background: #ff4b2b; color: white; box-shadow: 0 0 20px rgba(255, 75, 43, 0.5); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
+
+        .btn { background: var(--cambridge-blue); color: white; border: none; padding: 16px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; }
+        .btn-next { background: var(--success); margin-top: 20px; display: none; }
+        
+        #live-commentary { margin-top: 15px; padding: 15px; background: #f1f5f9; border-radius: 6px; min-height: 40px; font-size: 13px; border: 1px solid #cbd5e1; text-align: left; color: #475569; }
+        
+        /* Feedback Area with Tips Grid */
+        #feedback-area { display: none; margin-top: 30px; text-align: left; padding: 25px; background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; }
+        .tag-achieved { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; margin: 4px; font-weight: bold; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        
+        .tips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px; }
+        .tip-item { font-size: 13px; line-height: 1.4; color: #334155; background: #f8fafc; padding: 12px; border-radius: 6px; border-left: 3px solid #cbd5e1; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Part 3: Collaborative Task</h2>
+    
+    <div class="instructions">
+        <strong>Instructions:</strong> You have 2 minutes to discuss the prompts below with your partner. Focus on <strong>interactional language</strong> (agreeing, disagreeing, and asking for opinions). After 2 minutes, the Examiner will ask you to make a final decision. You have 1 minute to reach a conclusion together.
+    </div>
+
+    <div class="mindmap-outer">
+        <svg class="spider-lines">
+            <line x1="15%" y1="15%" x2="50%" y2="50%" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="85%" y1="15%" x2="50%" y2="50%" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="15%" y1="85%" x2="50%" y2="50%" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="50%" y1="85%" x2="50%" y2="50%" stroke="#cbd5e1" stroke-width="2"/>
+            <line x1="85%" y1="85%" x2="50%" y2="50%" stroke="#cbd5e1" stroke-width="2"/>
+        </svg>
+
+        <div class="mindmap-container">
+            <div class="node">Walking or cycling instead of driving</div>
+            <div class="node" style="grid-column: 3;">Refraining from buying the latest phone annually</div>
+            <div class="central-node">How effective might these lifestyle changes be in protecting the environment?</div>
+            <div class="node" style="grid-row: 3;">Shopping less to reduce waste</div>
+            <div class="node" style="grid-column: 2; grid-row: 3;">Choosing to repair items instead of replacing them</div>
+            <div class="node" style="grid-column: 3; grid-row: 3;">Reducing energy use in the home</div>
+        </div>
+    </div>
+
+    <div id="phase-label" class="phase-label">Ready to Begin</div>
+    <div id="timer" class="timer-box">2:00</div>
+    <div id="mic" class="mic-icon">🎙️</div>
+    
+    <button id="start-btn" class="btn" onclick="initMic()">START COLLABORATIVE TASK</button>
+    <div id="live-commentary">Waiting for speech...</div>
+
+    <div id="feedback-area">
+        <strong style="color:var(--success); font-size: 11px; text-transform: uppercase;">Interactional Markers Detected:</strong>
+        <div id="achieved-list" style="margin: 10px 0;"></div>
+
+        <div class="tips-grid">
+            <div class="tip-item"><strong>Negotiate Transitions:</strong> Don't get stuck on one point. Use "Shall we move on to..." to cover at least 3-4 prompts.</div>
+            <div class="tip-item"><strong>React to your Partner:</strong> Avoid long monologues. Use phrases like "I see your point, but..." to show active listening.</div>
+            <div class="tip-item"><strong>Speculate & Evaluate:</strong> Use C1 level speculation: "I'd imagine that..." or "In the long run, this might be..."</div>
+            <div class="tip-item"><strong>The Decision Phase:</strong> Use the final minute to compare the 'best' two options rather than just picking one immediately.</div>
+        </div>
+
+        <button class="btn btn-next" id="next-btn" onclick="window.location.href='part4.html'">GO TO PART 4 →</button>
+    </div>
+</div>
+
+<script>
+    const masterBank = ["see what you mean", "moving on to", "would you agree", "in the long run", "what's your take", "valid point", "absolutely", "shall we", "up to a point"];
+    const aiInterventions = [
+        "That's a valid point, but do you think it's realistic for people living in big cities to stop driving entirely?",
+        "I see where you're coming from. Shall we discuss the idea of repairing items rather than replacing them?"
+    ];
+
+    let timeLeft = 120;
+    let isDecisionPhase = false;
+    let timerInterval;
+    let foundMarkers = new Set();
+    let interventionCount = 0;
+
+    const synth = window.speechSynthesis;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-GB';
+
+    recognition.onresult = (event) => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript.toLowerCase();
+            if (event.results[i].isFinal) {
+                masterBank.forEach(m => { if (transcript.includes(m)) foundMarkers.add(m); });
+            } else { interim += transcript; }
+        }
+        document.getElementById('live-commentary').innerText = interim;
+    };
+
+    async function initMic() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            stream.getTracks().forEach(t => t.stop());
+            startPhase1();
+        } catch (e) { alert("Mic access required"); }
+    }
+
+    function toggleMicUI(on) {
+        const mic = document.getElementById('mic');
+        if (on) {
+            mic.classList.add('listening');
+            try { recognition.start(); } catch(e) {}
+        } else {
+            mic.classList.remove('listening');
+            try { recognition.stop(); } catch(e) {}
+        }
+    }
+
+    function speak(text, callback) {
+        toggleMicUI(false); 
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'en-GB';
+        utter.rate = 0.9;
+        utter.onend = () => { if (callback) callback(); };
+        synth.speak(utter);
+    }
+
+    function startPhase1() {
+        document.getElementById('start-btn').style.display = 'none';
+        document.getElementById('phase-label').innerText = "Phase 1: Discussion";
+        speak("Now, I’d like you to talk about something together for about two minutes. Talk to each other about how effective these changes might be.", () => {
+            toggleMicUI(true);
+            runTimer();
+        });
+    }
+
+    function runTimer() {
+        clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            updateDisplay();
+            if (!isDecisionPhase && (timeLeft === 80 || timeLeft === 40)) aiIntervene();
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                if (!isDecisionPhase) startDecisionPhase();
+                else finishTask();
+            }
+        }, 1000);
+    }
+
+    function aiIntervene() {
+        const phrase = aiInterventions[interventionCount % aiInterventions.length];
+        interventionCount++;
+        speak(phrase, () => { toggleMicUI(true); });
+    }
+
+    function startDecisionPhase() {
+        isDecisionPhase = true;
+        timeLeft = 60;
+        updateDisplay();
+        document.getElementById('phase-label').innerText = "Phase 2: Decision";
+        speak("Thank you. Now you have about a minute to decide which of these lifestyle changes would be the most effective in the long term.", () => {
+            toggleMicUI(true);
+            runTimer();
+        });
+    }
+
+    function finishTask() {
+        toggleMicUI(false);
+        document.getElementById('timer').classList.add('timer-finished');
+        document.getElementById('phase-label').classList.add('timer-finished');
+        document.getElementById('phase-label').innerText = "TIME IS UP";
+        document.getElementById('feedback-area').style.display = 'block';
+        document.getElementById('next-btn').style.display = 'block';
+        
+        const list = document.getElementById('achieved-list');
+        list.innerHTML = foundMarkers.size > 0 ? 
+            Array.from(foundMarkers).map(m => `<span class="tag-achieved">${m.toUpperCase()}</span>`).join('') :
+            "<em>Keep practicing interactional language!</em>";
+    }
+
+    function updateDisplay() {
+        let m = Math.floor(timeLeft / 60);
+        let s = timeLeft % 60;
+        document.getElementById('timer').innerText = `${m}:${s < 10 ? '0' : ''}${s}`;
+    }
+</script>
+</body>
+</html>
