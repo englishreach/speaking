@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C1 Speaking: Part 4 - Guided Discussion</title>
+    <style>
+        :root {
+            --cambridge-blue: #0072bc;
+            --bg: #f4f7f9;
+            --success: #16a34a;
+            --danger: #dc2626;
+            --slate: #64748b;
+        }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--bg); display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; box-sizing: border-box; }
+        .card { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 25px rgba(0,0,0,0.1); width: 100%; max-width: 800px; text-align: center; border: 1px solid #ddd; }
+        
+        .question-display { min-height: 100px; display: flex; align-items: center; justify-content: center; margin: 20px 0; padding: 25px; background: #fffbeb; border: 2px solid #fcd34d; border-radius: 8px; font-size: 20px; font-weight: 600; color: #92400e; line-height: 1.4; }
+
+        .timer-box { font-size: 50px; font-weight: 800; color: var(--cambridge-blue); margin-bottom: 5px; font-variant-numeric: tabular-nums; }
+        .progress-bar { width: 100%; height: 10px; background: #eee; border-radius: 10px; margin-bottom: 20px; overflow: hidden; }
+        .progress-fill { height: 100%; background: var(--cambridge-blue); width: 0%; transition: width 1s linear; }
+
+        .mic-icon { width: 60px; height: 60px; background: #eee; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; font-size: 28px; margin-bottom: 15px; color: #666; }
+        .listening { background: #ff4b2b; color: white; box-shadow: 0 0 15px rgba(255, 75, 43, 0.4); animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+
+        #live-commentary { margin-top: 10px; padding: 12px; background: #f1f5f9; border-radius: 6px; min-height: 40px; font-size: 13px; border: 1px solid #cbd5e1; text-align: left; color: #475569; font-style: italic; }
+
+        .btn { background: var(--cambridge-blue); color: white; border: none; padding: 16px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; }
+        .secondary-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 20px; }
+        .sample-btn { background: var(--slate); display: none; }
+        .next-btn { background: var(--cambridge-blue); display: none; }
+        
+        #feedback-area { display: none; margin-top: 30px; text-align: left; padding: 20px; border-top: 2px solid #eee; }
+        .tag-achieved { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 11px; margin: 3px; font-weight: bold; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+        .tips-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .tip-item { font-size: 12px; background: #f8fafc; padding: 10px; border-radius: 6px; border-left: 3px solid var(--cambridge-blue); }
+        .finish-btn { background: var(--success); margin-top: 20px; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2 style="color: var(--cambridge-blue); margin-bottom: 5px;">Part 4: Discussion</h2>
+    <span id="status-msg" style="font-weight: bold; color: var(--slate); text-transform: uppercase; font-size: 12px;">Ready to begin</span>
+
+    <div class="question-display" id="question-text">The Examiner will guide the interview.</div>
+
+    <div class="timer-box" id="timer">1:00</div>
+    <div class="progress-bar"><div id="progress" class="progress-fill"></div></div>
+    
+    <div id="mic" class="mic-icon">🎙️</div>
+    <div id="live-commentary">Transcribing speech...</div>
+
+    <button id="start-btn" class="btn" style="margin-top: 20px;" onclick="startInterview()">START INTERVIEW</button>
+    
+    <div class="secondary-btns" id="action-buttons">
+        <button id="sample-btn" class="btn sample-btn" onclick="playSample()">🔊 HEAR SAMPLE</button>
+        <button id="next-btn" class="btn next-btn" onclick="nextQuestion()">NEXT QUESTION →</button>
+    </div>
+
+    <div id="feedback-area">
+        <strong style="font-size: 12px; color: var(--success); text-transform: uppercase;">C1 Markers Detected:</strong>
+        <div id="achieved-list" style="margin: 10px 0;"></div>
+        
+        <div class="tips-grid">
+            <div class="tip-item"><strong>Expand:</strong> Use "Furthermore" to build your case.</div>
+            <div class="tip-item"><strong>Justify:</strong> Use "The reason I say that is..."</div>
+            <div class="tip-item"><strong>Societal View:</strong> Move from personal to broad examples.</div>
+            <div class="tip-item"><strong>Speculate:</strong> Use "One could argue that..."</div>
+        </div>
+        <button id="finish-btn" class="btn finish-btn" onclick="window.location.href='https://www.englishreach.com'">COMPLETE EXAM & BACK TO HOME</button>
+    </div>
+</div>
+
+<script>
+    const questions = [
+        { text: "Some people say that individual actions make no difference compared to large corporations. What do you think?", sample: "sample1.mp3" },
+        { text: "Do you think environmental education should be a mandatory subject in all schools?", sample: "sample2.mp3" },
+        { text: "How much responsibility should governments take in encouraging people to change their habits?", sample: "sample3.mp3" },
+        { text: "Why do you think some people find it so difficult to give up modern comforts for the environment?", sample: "sample4.mp3" }
+    ];
+
+    const masterBank = ["to a certain extent", "it boils down to", "firm believer", "absolutely vital", "highly likely", "in my view", "on a broader scale", "that being said", "the reason i say"];
+
+    let currentQ = 0;
+    let timeLeft = 60;
+    let timerInterval;
+    let foundMarkers = new Set();
+    const synth = window.speechSynthesis;
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.continuous = true;
+    recognition.interimResults = true;
+    recognition.lang = 'en-GB';
+
+    // Transcription Logic
+    recognition.onresult = (event) => {
+        let interim = '';
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript.toLowerCase();
+            if (event.results[i].isFinal) {
+                masterBank.forEach(m => { if (transcript.includes(m)) foundMarkers.add(m); });
+            } else { interim += transcript; }
+        }
+        document.getElementById('live-commentary').innerText = interim;
+    };
+
+    function startInterview() {
+        document.getElementById('start-btn').style.display = 'none';
+        speakAndLoad();
+    }
+
+    function speakAndLoad() {
+        if (currentQ >= questions.length) { finishExam(); return; }
+
+        const q = questions[currentQ];
+        document.getElementById('question-text').innerText = q.text;
+        document.getElementById('status-msg').innerText = "The Examiner is speaking...";
+        document.getElementById('sample-btn').style.display = 'none';
+        document.getElementById('next-btn').style.display = 'none';
+        
+        // Remove any dynamic finish buttons from previous rounds if they exist
+        const oldFinish = document.getElementById('dynamic-finish');
+        if (oldFinish) oldFinish.remove();
+
+        const utter = new SpeechSynthesisUtterance(q.text);
+        utter.lang = 'en-GB';
+        utter.onend = () => startResponseTimer();
+        synth.speak(utter);
+    }
+
+    function startResponseTimer() {
+        timeLeft = 60;
+        document.getElementById('mic').classList.add('listening');
+        document.getElementById('status-msg').innerText = "Your turn to speak";
+        document.getElementById('live-commentary').innerText = "Listening...";
+        
+        try { recognition.start(); } catch(e) {}
+
+        timerInterval = setInterval(() => {
+            timeLeft--;
+            document.getElementById('timer').innerText = `0:${timeLeft < 10 ? '0' : ''}${timeLeft}`;
+            document.getElementById('progress').style.width = ((60 - timeLeft) / 60) * 100 + "%";
+
+            if (timeLeft <= 0) {
+                clearInterval(timerInterval);
+                try { recognition.stop(); } catch(e) {}
+                document.getElementById('mic').classList.remove('listening');
+                
+                document.getElementById('sample-btn').style.display = 'block';
+
+                if (currentQ === questions.length - 1) {
+                    document.getElementById('status-msg').innerText = "Interview complete.";
+                    const finishTrigger = document.createElement('button');
+                    finishTrigger.id = "dynamic-finish";
+                    finishTrigger.className = "btn";
+                    finishTrigger.style.backgroundColor = "var(--success)";
+                    finishTrigger.innerText = "VIEW FINAL FEEDBACK";
+                    finishTrigger.onclick = finishExam;
+                    document.getElementById('action-buttons').appendChild(finishTrigger);
+                } else {
+                    document.getElementById('status-msg').innerText = "Time Up. Continue when ready.";
+                    document.getElementById('next-btn').style.display = 'block';
+                }
+            }
+        }, 1000);
+    }
+
+    function playSample() {
+        new Audio(questions[currentQ].sample).play().catch(e => alert("Audio file not found."));
+    }
+
+    function nextQuestion() {
+        currentQ++;
+        speakAndLoad();
+    }
+
+    function finishExam() {
+        document.getElementById('question-text').innerText = "Mock Exam Concluded.";
+        document.getElementById('status-msg').innerText = "Review your results below.";
+        document.getElementById('action-buttons').style.display = 'none';
+        document.getElementById('timer').innerText = "FINISH";
+        document.getElementById('feedback-area').style.display = 'block';
+        document.getElementById('finish-btn').style.display = 'block';
+        
+        const list = document.getElementById('achieved-list');
+        list.innerHTML = foundMarkers.size > 0 ? 
+            Array.from(foundMarkers).map(m => `<span class="tag-achieved">${m.toUpperCase()}</span>`).join('') :
+            "<em>Keep working on those C1 discourse markers!</em>";
+
+        const endMsg = new SpeechSynthesisUtterance("Thank you. That is the end of the speaking test.");
+        endMsg.lang = 'en-GB';
+        synth.speak(endMsg);
+    }
+</script>
+</body>
+</html>
