@@ -65,10 +65,10 @@
         <div id="achieved-list" style="margin: 10px 0;"></div>
         
         <div class="tips-grid">
-            <div class="tip-item"><strong>Expand:</strong> Use "Furthermore" to build your case.</div>
-            <div class="tip-item"><strong>Justify:</strong> Use "The reason I say that is..."</div>
-            <div class="tip-item"><strong>Societal View:</strong> Move from personal to broad examples.</div>
-            <div class="tip-item"><strong>Speculate:</strong> Use "One could argue that..."</div>
+            <div class="tip-item"><strong>Expand:</strong> Use connectors to build your case.</div>
+            <div class="tip-item"><strong>Justify:</strong> Explain the 'why' behind your opinions.</div>
+            <div class="tip-item"><strong>Abstract:</strong> Talk about society, not just yourself.</div>
+            <div class="tip-item"><strong>Speculate:</strong> Use modal verbs for possibilities.</div>
         </div>
         <button id="finish-btn" class="btn finish-btn" onclick="window.location.href='https://www.englishreach.com'">COMPLETE EXAM & BACK TO HOME</button>
     </div>
@@ -94,8 +94,9 @@
     recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = 'en-GB';
+    
+    let currentAudio = null;
 
-    // Transcription Logic
     recognition.onresult = (event) => {
         let interim = '';
         for (let i = event.resultIndex; i < event.results.length; i++) {
@@ -112,6 +113,14 @@
         speakAndLoad();
     }
 
+    function stopAllAudio() {
+        synth.cancel();
+        if (currentAudio) {
+            currentAudio.pause();
+            currentAudio.currentTime = 0;
+        }
+    }
+
     function speakAndLoad() {
         if (currentQ >= questions.length) { finishExam(); return; }
 
@@ -121,12 +130,14 @@
         document.getElementById('sample-btn').style.display = 'none';
         document.getElementById('next-btn').style.display = 'none';
         
-        // Remove any dynamic finish buttons from previous rounds if they exist
         const oldFinish = document.getElementById('dynamic-finish');
         if (oldFinish) oldFinish.remove();
 
+        stopAllAudio();
+
         const utter = new SpeechSynthesisUtterance(q.text);
         utter.lang = 'en-GB';
+        utter.rate = 0.9;
         utter.onend = () => startResponseTimer();
         synth.speak(utter);
     }
@@ -161,7 +172,7 @@
                     finishTrigger.onclick = finishExam;
                     document.getElementById('action-buttons').appendChild(finishTrigger);
                 } else {
-                    document.getElementById('status-msg').innerText = "Time Up. Continue when ready.";
+                    document.getElementById('status-msg').innerText = "Time Up. Review sample or continue.";
                     document.getElementById('next-btn').style.display = 'block';
                 }
             }
@@ -169,16 +180,20 @@
     }
 
     function playSample() {
-        new Audio(questions[currentQ].sample).play().catch(e => alert("Audio file not found."));
+        if (currentAudio) currentAudio.pause();
+        currentAudio = new Audio(questions[currentQ].sample);
+        currentAudio.play().catch(e => console.log("Audio sample not found."));
     }
 
     function nextQuestion() {
+        stopAllAudio();
         currentQ++;
         speakAndLoad();
     }
 
     function finishExam() {
-        document.getElementById('question-text').innerText = "Mock Exam Concluded.";
+        stopAllAudio();
+        document.getElementById('question-text').innerText = "Exam Complete.";
         document.getElementById('status-msg').innerText = "Review your results below.";
         document.getElementById('action-buttons').style.display = 'none';
         document.getElementById('timer').innerText = "FINISH";
@@ -188,7 +203,7 @@
         const list = document.getElementById('achieved-list');
         list.innerHTML = foundMarkers.size > 0 ? 
             Array.from(foundMarkers).map(m => `<span class="tag-achieved">${m.toUpperCase()}</span>`).join('') :
-            "<em>Keep working on those C1 discourse markers!</em>";
+            "<em>Keep practicing your C1 discourse markers!</em>";
 
         const endMsg = new SpeechSynthesisUtterance("Thank you. That is the end of the speaking test.");
         endMsg.lang = 'en-GB';
