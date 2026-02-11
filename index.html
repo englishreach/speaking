@@ -1,6 +1,9 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C1 Speaking: Part 1</title>
     <style>
         :root {
             --cambridge-blue: #0072bc;
@@ -13,7 +16,7 @@
         .card { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); width: 100%; max-width: 550px; text-align: center; position: relative; }
         h2 { color: var(--cambridge-blue); margin-top: 0; }
         
-        /* Updated Timer Styles */
+        /* Timer Styles */
         #timer-container { 
             display: none; position: absolute; top: 20px; right: 20px; 
             width: 55px; height: 55px; align-items: center; justify-content: center; 
@@ -30,6 +33,7 @@
         .mic-container { margin: 15px 0; }
         .mic-icon { width: 70px; height: 70px; background: #eee; border-radius: 50%; display: inline-flex; justify-content: center; align-items: center; font-size: 28px; transition: 0.3s; }
         .listening { background: #ff4b2b; color: white; box-shadow: 0 0 20px rgba(255, 75, 43, 0.5); animation: pulse 1.5s infinite; }
+        
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.1); } 100% { transform: scale(1); } }
         
         .btn { background: var(--cambridge-blue); color: white; border: none; padding: 14px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; transition: background 0.3s; margin-bottom: 10px; }
@@ -38,6 +42,7 @@
 
         #live-commentary { margin-top: 15px; padding: 12px; background: #f8fafc; border-radius: 6px; min-height: 40px; font-size: 14px; color: #334155; border: 1px solid #e2e8f0; text-align: left; line-height: 1.5; }
         #sample-display { display: none; margin-top: 15px; padding: 15px; background: #f0fdf4; border-left: 4px solid var(--success); text-align: left; font-size: 14px; color: #166534; line-height: 1.6; border-radius: 0 6px 6px 0; }
+        
         #feedback-area { display: none; margin-top: 25px; text-align: left; padding: 20px; background: #fff; border: 1px solid #cbd5e1; border-radius: 10px; }
         .feedback-label { font-weight: 800; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 8px; color: var(--success); }
         .tag-achieved { display: inline-block; padding: 3px 10px; border-radius: 15px; font-size: 11px; margin-right: 6px; margin-top: 6px; font-weight: bold; background: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
@@ -68,7 +73,13 @@
         <div id="achieved-list"></div>
         <div class="eval-box">
             <strong>Exam Requirements:</strong><br>
-            In this part of the C1 Advanced test, examiners look for your ability to link ideas and use general social language to talk about yourself, your interests, work and future plans (although topics may vary), focusing on fluency, coherence, vocabulary and grammar. You need to give full, natural answers, not just one-word responses and show good pronunciation that is generally intelligible.
+            In this part of the C1 Advanced test, examiners look for your ability to link ideas and use general social language to talk about yourself, your interests, work and future plans, focusing on fluency, coherence, vocabulary and grammar. Give full, natural answers and show good pronunciation.
+        </div>
+        
+        <div style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+            <button class="btn" onclick="window.location.href='https://yourwebsite.com/speaking-part-2'" style="background: #16a34a; width: 100%;">
+                GO TO PART 2 →
+            </button>
         </div>
     </div>
 </div>
@@ -112,6 +123,7 @@
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = true;
+    recognition.lang = 'en-GB';
 
     recognition.onresult = (event) => {
         let transcript = Array.from(event.results).map(r => r[0].transcript).join('').toLowerCase();
@@ -152,6 +164,7 @@
 
     function startExam() {
         startBtn.disabled = true;
+        startBtn.innerText = "EXAM IN PROGRESS...";
         nextQuestion();
     }
 
@@ -163,10 +176,10 @@
         if (currentQ < examData.length) {
             status.innerText = "A.I. Examiner is speaking...";
             mic.classList.remove('listening');
-            recognition.stop();
+            try { recognition.stop(); } catch(e) {}
 
             speak(examData[currentQ].q, () => {
-                status.innerText = "Your turn...";
+                status.innerText = "Your turn (25 seconds)...";
                 sampleBtn.style.display = "block";
                 mic.classList.add('listening');
                 try { recognition.start(); } catch(e) {}
@@ -185,13 +198,18 @@
     function finishExam() {
         status.innerText = "Practice Complete.";
         mic.classList.remove('listening');
-        recognition.stop();
+        try { recognition.stop(); } catch(e) {}
         timerContainer.style.display = 'none';
+        startBtn.innerText = "FINISHED";
         document.getElementById('feedback-area').style.display = 'block';
-        document.getElementById('achieved-list').innerHTML = Array.from(foundMarkers).map(m => `<span class="tag-achieved">${m.toUpperCase()}</span>`).join('');
+        
+        if (foundMarkers.size > 0) {
+            document.getElementById('achieved-list').innerHTML = Array.from(foundMarkers).map(m => `<span class="tag-achieved">${m.toUpperCase()}</span>`).join('');
+        } else {
+            document.getElementById('achieved-list').innerHTML = "<em style='font-size:12px; color:#94a3b8;'>Practice using markers like 'Although' or 'Therefore' to link ideas.</em>";
+        }
     }
 </script>
 
 </body>
 </html>
-
