@@ -33,8 +33,10 @@
         
         .btn { background: var(--cambridge-blue); color: white; border: none; padding: 16px 30px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; font-size: 16px; transition: 0.3s; }
         .btn:disabled { background: var(--disabled); cursor: not-allowed; }
+        .btn-sample { background: var(--success); margin-top: 10px; display: none; }
         .btn-next { background: var(--success); margin-top: 20px; }
 
+        #sample-answer-box { display: none; margin-top: 15px; padding: 20px; background: #f0fdf4; border: 1px dashed var(--success); border-radius: 8px; text-align: left; font-size: 14px; color: #166534; line-height: 1.6; }
         #live-commentary { margin-top: 15px; padding: 15px; background: #f8fafc; border-radius: 6px; min-height: 50px; font-size: 14px; border: 1px solid #e2e8f0; text-align: left; color: #475569; }
         
         #feedback-area { display: none; margin-top: 30px; text-align: left; padding: 25px; background: #fff; border: 2px solid #e2e8f0; border-radius: 12px; }
@@ -71,7 +73,16 @@
     <div id="status-text">Click Start to begin your 1-minute long turn</div>
     <div id="timer" class="timer">60s</div>
     <div id="mic" class="mic-icon">🎙️</div>
+    
     <button id="start-btn" class="btn" onclick="initMic()">START TASK</button>
+    <button id="sample-btn" class="btn btn-sample" onclick="toggleSample()">VIEW SAMPLE ANSWER</button>
+
+    <div id="sample-answer-box">
+        <strong>Sample Answer (C1 Level):</strong><br>
+        "I have chosen the photograph on the left and the one on the right. <strong>Both photos</strong> illustrate the detrimental impact of consumerism on our planet. <strong>While</strong> the first image shows a warehouse overflowing with parcels—symbolizing our modern obsession with online shopping, convenience, and fast fashion—the third picture depicts a landfill, which <strong>is essentially</strong> the grim and ironic result of this compulsive disposal cycle. <strong>In the sense that</strong> we are constantly discarding goods in exchange for newer, upgraded versions, we are generating unprecedented environmental pressure. 
+        <br><br>
+        <strong>Regarding</strong> how difficult it might be to change, I’d argue it is a significant challenge <strong>due to</strong> how deeply ingrained these behaviors have become. <strong>On the other hand</strong>, if we shift toward more sustainable models, people <strong>might be</strong> inclined to reduce their footprint. <strong>Alternatively</strong>, without a radical shift in our mindset regarding convenience, it <strong>appears</strong> unlikely that these behaviors will change significantly in the near future."
+    </div>
     
     <div id="live-commentary">Waiting for speech...</div>
 
@@ -127,7 +138,7 @@
             const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
             stream.getTracks().forEach(t => t.stop());
             startTask();
-        } catch (e) { alert("Microphone access is required for this task."); }
+        } catch (e) { alert("Microphone access is required."); }
     }
 
     function startTask() {
@@ -135,7 +146,6 @@
         const msg = "In this part of the test, I’m going to give you three pictures. I’d like you to talk about two of them on your own for about a minute. Please start now.";
         const utter = new SpeechSynthesisUtterance(msg);
         utter.lang = 'en-GB';
-        utter.rate = 0.95;
         
         document.getElementById('status-text').innerText = "Examiner is speaking...";
         
@@ -143,9 +153,15 @@
             try { recognition.start(); } catch(e) {}
             document.getElementById('mic').classList.add('listening');
             document.getElementById('status-text').innerText = "Your 1-minute turn has started!";
+            document.getElementById('sample-btn').style.display = 'inline-block';
             runTimer();
         };
         synth.speak(utter);
+    }
+
+    function toggleSample() {
+        const box = document.getElementById('sample-answer-box');
+        box.style.display = (box.style.display === 'block') ? 'none' : 'block';
     }
 
     function runTimer() {
@@ -166,11 +182,9 @@
         document.getElementById('feedback-area').style.display = 'block';
         
         const list = document.getElementById('achieved-list');
-        if(foundMarkers.size > 0) {
-            list.innerHTML = Array.from(foundMarkers).map(m => `<span class="tag-achieved">${m.toUpperCase()}</span>`).join('');
-        } else {
-            list.innerHTML = "<em style='font-size:12px; color:#94a3b8;'>No comparative phrases detected. Remember to use full sentences to link your ideas.</em>";
-        }
+        list.innerHTML = foundMarkers.size > 0 
+            ? Array.from(foundMarkers).map(m => `<span class="tag-achieved">${m.toUpperCase()}</span>`).join('')
+            : "<em style='font-size:12px; color:#94a3b8;'>No comparative phrases detected.</em>";
     }
 </script>
 </body>
